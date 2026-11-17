@@ -12,3 +12,25 @@ html {
 body {
   @apply bg-background text-white;
 }
+
+.falling-stars {
+  container-type: size;
+}
+
+.falling-star {
+  position: absolute;
+  top: 0;
+  aspect-ratio: 1;
+  background: url('/star.gif') center / contain no-repeat;
+  animation: star-fall 8s linear infinite;
+}
+
+@keyframes star-fall {
+  from {
+    transform: translate(-50%, -100%) scale(7);
+  }
+
+  to {
+    transform: translate(-50%, 95cqh) scale(0);
+  }
+}

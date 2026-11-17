@@ -7,6 +7,21 @@ import { fileURLToPath } from 'url'
 
 import config from '@/payload.config'
 
+const fallingStars = [
+  { left: '4%', size: 26, duration: '7s', delay: '-1s' },
+  { left: '12%', size: 40, duration: '9s', delay: '-5s' },
+  { left: '20%', size: 30, duration: '6s', delay: '-3s' },
+  { left: '29%', size: 44, duration: '8s', delay: '-0.5s' },
+  { left: '37%', size: 24, duration: '7s', delay: '-5.5s' },
+  { left: '45%', size: 36, duration: '9s', delay: '-2.5s' },
+  { left: '54%', size: 28, duration: '6s', delay: '-1.5s' },
+  { left: '62%', size: 42, duration: '8s', delay: '-4.5s' },
+  { left: '71%', size: 32, duration: '7s', delay: '-3.5s' },
+  { left: '79%', size: 26, duration: '9s', delay: '-7s' },
+  { left: '88%', size: 38, duration: '6s', delay: '-2s' },
+  { left: '96%', size: 30, duration: '8s', delay: '-6s' },
+]
+
 export default async function HomePage() {
   const headers = await getHeaders()
   const payloadConfig = await config
@@ -32,18 +47,22 @@ export default async function HomePage() {
           Blog
         </Link>
       </nav>
-      <div className="relative flex w-full justify-center overflow-hidden">
-        <video
-          autoPlay
-          className="absolute inset-0 h-full w-full object-cover"
-          loop
-          muted
-          playsInline
-          src="/stars.mp4"
-        />
+      <div className="relative isolate flex w-full justify-center overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="falling-stars pointer-events-none absolute inset-0 motion-reduce:hidden"
+        >
+          {fallingStars.map(({ left, size, duration, delay }) => (
+            <span
+              key={left}
+              className="falling-star"
+              style={{ left, width: size, animationDuration: duration, animationDelay: delay }}
+            />
+          ))}
+        </div>
         <Image
           alt="The Wonderous Storybook"
-          className="relative h-auto max-w-2xl py-16"
+          className="relative z-10 h-auto max-w-2xl py-16"
           height={768}
           priority
           src="/logo_white.png"
