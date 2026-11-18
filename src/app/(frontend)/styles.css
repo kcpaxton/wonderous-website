@@ -1,5 +1,13 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Germania One';
+  src: url('/GermaniaOne-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 html {
   -webkit-font-smoothing: antialiased;
 }
@@ -7,10 +15,92 @@ html {
 @theme {
   --color-background: #00002e;
   --color-text: #ffffff;
+  --font-sans: 'Germania One', fantasy;
 }
 
 body {
-  @apply bg-background text-white;
+  @apply bg-background font-sans text-white;
+}
+
+/* Skewed boxes share diagonal edges, so neighbors tile with only a thin gap. */
+.character-grid {
+  --card-skew: -13deg;
+  --card-width: clamp(9.5rem, 24vw, 16rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 0.25rem;
+}
+
+.character-card {
+  position: relative;
+  display: block;
+  width: var(--card-width);
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #171717;
+  outline: none;
+  transform: skewX(var(--card-skew));
+  transition:
+    transform 300ms,
+    box-shadow 300ms;
+}
+
+/* Border sits on its own top layer so the zoomed image and label can't cover it. */
+.character-card::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  box-shadow: inset 0 0 0 3px #facc15;
+  content: '';
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms;
+}
+
+.character-card:hover,
+.character-card:focus-visible {
+  z-index: 1;
+  box-shadow: 0 0 24px rgb(250 204 21 / 50%);
+  transform: translateY(-0.5rem) skewX(var(--card-skew));
+}
+
+.character-card:hover::after,
+.character-card:focus-visible::after {
+  opacity: 1;
+}
+
+/* Counter-skew keeps content upright; the scale covers the skewed corners. */
+.character-card-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: skewX(calc(var(--card-skew) * -1)) scale(1.35);
+  transition: transform 300ms;
+}
+
+.character-card:hover .character-card-image,
+.character-card:focus-visible .character-card-image {
+  transform: skewX(calc(var(--card-skew) * -1)) scale(1.45);
+}
+
+.character-card-label {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  padding: 3rem 1rem 1.25rem;
+  background: linear-gradient(to top, #000, rgb(0 0 0 / 80%) 50%, transparent);
+  text-align: center;
+  /* transform: skewX(calc(var(--card-skew) * -1)); */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .character-card,
+  .character-card-image {
+    transition: none;
+  }
 }
 
 .falling-stars {

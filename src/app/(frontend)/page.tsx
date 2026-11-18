@@ -39,7 +39,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center">
-      <nav className="flex w-full gap-6 py-4 bg-background p-6">
+      <nav className="flex w-full gap-6 py-4 bg-black p-6 justify-center">
         <Link href="/" className="hover:opacity-80">
           Home
         </Link>
@@ -62,18 +62,19 @@ export default async function HomePage() {
         </div>
         <Image
           alt="The Wonderous Storybook"
-          className="relative z-10 h-auto max-w-2xl py-16"
+          className="relative z-10 h-auto max-w-4xl py-16"
           height={768}
           priority
           src="/logo_white.png"
-          width={1366}
+          width={1566}
         />
       </div>
-      <div className="flex grow flex-col items-center justify-center">
+      <div className="flex grow flex-col items-center justify-center max-w-4xl my-16">
         
-        <h1 className="my-6 text-center text-4xl font-bold md:text-6xl">
-          A little goodness goes a long way
+        <h1 className="my-6 text-center text-4xl font-bold md:text-5xl">
+          There is a story waiting to be told
         </h1>
+        <p className="text-center opacity-70">The Wonderous Storybook is an high-paced top-down bullet hell roguelike. Discover a new world as you get transported into the action of a storybook. Fight through waves of enemies, gain unique powerups from all types of fairytale characters and break through the grips of the evil Shadow King. </p>
         
       </div>
       <section id="characters" className="w-full max-w-6xl px-6 py-16">
@@ -81,27 +82,19 @@ export default async function HomePage() {
         {characters.length === 0 ? (
           <p className="text-center opacity-70">Characters coming soon.</p>
         ) : (
-          <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+          <ul className="character-grid">
             {characters.map((c) => {
               const img = typeof c.image === 'object' ? c.image : null
               return (
                 <li key={c.id}>
-                  <Link
-                    href={`/characters/${c.slug}`}
-                    className="group relative block aspect-[3/4] overflow-hidden bg-neutral-900 [clip-path:polygon(0_0,100%_0,100%_90%,90%_100%,0_100%)]"
-                  >
+                  <Link href={`/characters/${c.slug}`} className="character-card">
                     {img?.url && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={img.url}
-                        alt={img.alt || c.name}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-110"
-                      />
+                      <img src={img.url} alt={img.alt || c.name} className="character-card-image" />
                     )}
-                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/70 to-transparent p-3 pt-10">
-                      <h3 className="text-lg font-extrabold uppercase italic tracking-wide">{c.name}</h3>
+                    <div className="character-card-label">
+                      <h3 className="text-xl uppercase tracking-wide md:text-2xl">{c.name}</h3>
                     </div>
-                    <div className="absolute inset-0 border-4 border-transparent transition group-hover:border-yellow-400" />
                   </Link>
                 </li>
               )
