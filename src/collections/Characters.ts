@@ -40,6 +40,35 @@ export const Characters: CollectionConfig = {
     },
     { name: 'description', type: 'textarea', required: true },
     {
+      name: 'powerUps',
+      type: 'array',
+      label: 'Power-ups',
+      admin: {
+        description: 'Powers and abilities this character can grant to the player.',
+      },
+      fields: [
+        {
+          name: 'title',
+          type: 'text',
+          required: true,
+          admin: { description: 'Name of this power-up' },
+        },
+        {
+          name: 'icon',
+          type: 'upload',
+          relationTo: 'media',
+          required: true,
+          admin: { description: 'Icon for this power-up' },
+        },
+        {
+          name: 'description',
+          type: 'text',
+          required: true,
+          admin: { description: 'Short description of this power-up' },
+        },
+      ],
+    },
+    {
       name: 'order',
       type: 'number',
       defaultValue: 0,

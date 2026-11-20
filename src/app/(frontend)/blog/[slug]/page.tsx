@@ -1,8 +1,8 @@
 import config from '@payload-config'
 import { RichText } from '@payloadcms/richtext-lexical/react'
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
-import React from 'react'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,13 +31,41 @@ export default async function PostPage({ params }: Args) {
   const hero = typeof post.heroImage === 'object' ? post.heroImage : null
 
   return (
-    <article>
-      <h1>{post.title}</h1>
-      {post.publishedAt && (
-        <time dateTime={post.publishedAt}>{new Date(post.publishedAt).toLocaleDateString()}</time>
-      )}
-      {hero?.url && <img src={hero.url} alt={hero.alt} style={{ maxWidth: '100%' }} />}
-      <RichText data={post.content} />
-    </article>
+    <div className="blog-page">
+      <article className="blog-article">
+        <header className="blog-article-header">
+          <Link href="/blog" className="blog-back-link">
+            <span aria-hidden="true">←</span> Back to all stories
+          </Link>
+          {post.publishedAt && (
+            <time dateTime={post.publishedAt}>
+              {new Date(post.publishedAt).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+              })}
+            </time>
+          )}
+          <h1>{post.title}</h1>
+          {post.excerpt && <p className="blog-article-excerpt">{post.excerpt}</p>}
+        </header>
+
+        {hero?.url && (
+          <div className="blog-article-hero">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={hero.url} alt={hero.alt || post.title} />
+          </div>
+        )}
+
+        <div className="blog-article-content">
+          <RichText data={post.content} />
+        </div>
+
+        <footer className="blog-article-footer">
+          <span>Keep exploring the storybook</span>
+          <Link href="/blog">Read more stories</Link>
+        </footer>
+      </article>
+    </div>
   )
 }

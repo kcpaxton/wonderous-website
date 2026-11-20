@@ -1,11 +1,10 @@
-import { headers as getHeaders } from 'next/headers.js'
+import { RichText } from '@payloadcms/richtext-lexical/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload } from 'payload'
-import React from 'react'
-import { fileURLToPath } from 'url'
 
 import config from '@/payload.config'
+import { CharacterGrid } from '@/components/CharacterGrid'
 
 const fallingStars = [
   { left: '4%', size: 26, duration: '7s', delay: '-1s' },
@@ -23,30 +22,24 @@ const fallingStars = [
 ]
 
 export default async function HomePage() {
-  const headers = await getHeaders()
   const payloadConfig = await config
   const payload = await getPayload({ config: payloadConfig })
-  const { user } = await payload.auth({ headers })
 
-  const { docs: characters } = await payload.find({
-    collection: 'characters',
-    sort: 'order',
-    depth: 1,
-    limit: 100,
-  })
-
-  const fileURL = `vscode://file/${fileURLToPath(import.meta.url)}`
+  const [{ docs: characters }, home] = await Promise.all([
+    payload.find({
+      collection: 'characters',
+      sort: 'order',
+      depth: 1,
+      limit: 100,
+    }),
+    payload.findGlobal({
+      slug: 'home',
+      depth: 1,
+    }),
+  ])
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center">
-      <nav className="flex w-full gap-6 py-4 bg-black p-6 justify-center">
-        <Link href="/" className="hover:opacity-80">
-          Home
-        </Link>
-        <Link href="/blog" className="hover:opacity-80">
-          Blog
-        </Link>
-      </nav>
       <div className="relative isolate flex w-full justify-center overflow-hidden">
         <div
           aria-hidden="true"
@@ -82,26 +75,71 @@ export default async function HomePage() {
         {characters.length === 0 ? (
           <p className="text-center opacity-70">Characters coming soon.</p>
         ) : (
-          <ul className="character-grid">
-            {characters.map((c) => {
-              const img = typeof c.image === 'object' ? c.image : null
-              return (
-                <li key={c.id}>
-                  <Link href={`/characters/${c.slug}`} className="character-card">
-                    {img?.url && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={img.url} alt={img.alt || c.name} className="character-card-image" />
-                    )}
-                    <div className="character-card-label">
-                      <h3 className="text-xl uppercase tracking-wide md:text-2xl">{c.name}</h3>
-                    </div>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+          <CharacterGrid characters={characters} />
         )}
       </section>
+      {home.featureSections && home.featureSections.length > 0 && (
+        <div className="feature-sections w-full">
+          {home.featureSections.map((section, index) => {
+            const media = typeof section.media === 'object' ? section.media : null
+            const isVideo = media?.mimeType?.startsWith('video/')
+
+            return (
+              <section
+                key={section.id ?? index}
+                className={`feature-section ${
+                  section.mediaPosition === 'right'
+                    ? 'feature-section-media-right'
+                    : section.mediaPosition === 'center'
+                      ? 'feature-section-media-center'
+                      : section.mediaPosition === 'center-text-top'
+                        ? 'feature-section-media-center-text-top'
+                        : ''
+                }`}
+              >
+                <div className="feature-section-content">
+                  <h2>{section.title}</h2>
+                  <div className="feature-section-text">
+                    <RichText data={section.text} />
+                  </div>
+                </div>
+                <div className="feature-section-media">
+                  {media?.url &&
+                    (isVideo ? (
+                      <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        preload="auto"
+                        aria-label={media.alt}
+                      >
+                        <source src={media.url} type={media.mimeType || undefined} />
+                        Your browser does not support embedded video.
+                      </video>
+                    ) : (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={media.url} alt={media.alt || section.title} />
+                    ))}
+                </div>
+              </section>
+            )
+          })}
+        </div>
+      )}
+      {home.blogCallout?.enabled && (
+        <section id="blog-callout" className="blog-callout w-full">
+          <div className="blog-callout-content">
+            <h2>{home.blogCallout.title}</h2>
+            <div className="blog-callout-text">
+              <RichText data={home.blogCallout.description} />
+            </div>
+            <Link href="/blog" className="blog-callout-cta">
+              {home.blogCallout.ctaText}
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   )
 }

@@ -91,8 +91,12 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    home: Home;
+  };
+  globalsSelect: {
+    home: HomeSelect<false> | HomeSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -230,6 +234,46 @@ export interface Character {
   order?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home".
+ */
+export interface Home {
+  /**
+   * Sections displayed below the characters. Drag entries to change their order.
+   */
+  featureSections?:
+    | {
+        title: string;
+        text: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        };
+        /**
+         * Upload an image or video to display beside this text.
+         */
+        media: number | Media;
+        /**
+         * Choose which side of the section displays the image or video.
+         */
+        mediaPosition: 'left' | 'center' | 'right';
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -382,6 +426,23 @@ export interface CharactersSelect<T extends boolean = true> {
   artwork?: T;
   description?: T;
   order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "home_select".
+ */
+export interface HomeSelect<T extends boolean = true> {
+  featureSections?:
+    | T
+    | {
+        title?: T;
+        text?: T;
+        media?: T;
+        mediaPosition?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

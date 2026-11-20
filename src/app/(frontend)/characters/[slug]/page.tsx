@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import React from 'react'
 
 import config from '@/payload.config'
+import { CharacterGrid } from '@/components/CharacterGrid'
 
 export const dynamic = 'force-dynamic'
 
@@ -47,25 +48,33 @@ export default async function CharacterPage({ params }: { params: Promise<{ slug
         </div>
       </div>
 
-      <ul className="mt-16 flex flex-wrap justify-center gap-2">
-        {all.map((o) => {
-          const img = typeof o.image === 'object' ? o.image : null
-          return (
-            <li key={o.id}>
-              <Link
-                href={`/characters/${o.slug}`}
-                title={o.name}
-                className={`block h-20 w-16 overflow-hidden border-2 ${o.id === c.id ? 'border-yellow-400' : 'border-transparent opacity-60 hover:opacity-100'}`}
-              >
-                {img?.url && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={img.url} alt={o.name} className="h-full w-full object-cover" />
-                )}
-              </Link>
-            </li>
-          )
-        })}
-      </ul>
+      {c.powerUps && c.powerUps.length > 0 && (
+        <section className="mx-auto mt-24 w-full max-w-3xl">
+          <h2 className="mb-10 text-center text-3xl font-bold md:text-5xl">Power-ups</h2>
+          <div className="power-ups-grid">
+            {c.powerUps.map((powerUp, index) => {
+              const icon = typeof powerUp.icon === 'object' ? powerUp.icon : null
+              return (
+                <div key={index} className="power-up-item">
+                  {icon?.url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={icon.url} alt={powerUp.title} className="power-up-icon" />
+                  )}
+                  <div>
+                    <h3 className="power-up-title">{powerUp.title}</h3>
+                    <p className="power-up-description">{powerUp.description}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      <div className="mt-36">
+        <h2 className="mb-10 text-center text-3xl font-bold md:text-5xl">Meet the Characters</h2>
+        <CharacterGrid characters={all} currentId={c.id} />
+      </div>
     </div>
   )
 }
